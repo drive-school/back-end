@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  School    School[]
+}
+
+model School {
+  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  OwnerID     String        @map("owner_id") @db.ObjectId
+  Owner       User          @relation(fields: [OwnerID], references: [id])
+  Students    Students[]
+  Vehicles    Vehicles[]
+  Lessons     Lessons[]
+  Instructors Instructors[]
+}
+
+model Students {
+  id   String @id @default(cuid()) @map("_id") @db.ObjectId
+  name String
+
+  cc        String   @unique
+  NIF       String   @unique
+  birthdate DateTime
+
+  email   String? @unique
+  address String
+  phone   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  SchoolID String @map("school_id") @db.ObjectId
+  School   School @relation(fields: [SchoolID], references: [id])
+}
+
+model Vehicles {
+  id           String   @id @default(cuid()) @map("_id") @db.ObjectId
+  serialNumber String   @unique
+  brand        String
+  model        String
+  plate        String
+  year         Int
+  month        Int
+  revision     DateTime
+  lastRevision DateTime
+  fuel         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  SchoolID String @map("school_id") @db.ObjectId
+  School   School @relation(fields: [SchoolID], references: [id])
+}
+
+model Instructors {
+  id       String @id @default(cuid()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+
+  SchoolID String @map("school_id") @db.ObjectId
+  School   School @relation(fields: [SchoolID], references: [id])
+
+  Lessons Lessons[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lessons {
+  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
+  type      String
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  SchoolID String @map("school_id") @db.ObjectId
+  School   School @relation(fields: [SchoolID], references: [id])
+
+  InstructorID String      @map("instructor_id") @db.ObjectId
+  Instructor   Instructors @relation(fields: [InstructorID], references: [id])
+}

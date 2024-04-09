@@ -1,7 +1,10 @@
 import { Elysia } from "elysia";
+import { swagger } from "@elysiajs/swagger";
+import userRoutes from "./routes/user";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new Elysia()
+  .use(userRoutes)
+  .use(swagger())
+  .listen(Bun.env.API_PORT || 9696);
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+console.log(`🦊 ${Bun.env.API_NAME} is running at ${app.server?.hostname}:${Bun.env.API_PORT || 9696}`);
