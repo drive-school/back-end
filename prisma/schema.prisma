@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid()) @map("_id")
   email     String   @unique
   name      String?
   password  String
@@ -24,12 +24,12 @@ model User {
 }
 
 model School {
-  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid()) @map("_id")
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  OwnerID     String        @map("owner_id") @db.ObjectId
+  OwnerID     String        @map("owner_id")
   Owner       User          @relation(fields: [OwnerID], references: [id])
   Students    Students[]
   Vehicles    Vehicles[]
@@ -38,7 +38,7 @@ model School {
 }
 
 model Students {
-  id   String @id @default(cuid()) @map("_id") @db.ObjectId
+  id   String @id @default(cuid()) @map("_id")
   name String
 
   cc        String   @unique
@@ -52,13 +52,12 @@ model Students {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  SchoolID String @map("school_id") @db.ObjectId
+  SchoolID String @map("school_id")
   School   School @relation(fields: [SchoolID], references: [id])
 }
 
 model Vehicles {
-  id           String   @id @default(cuid()) @map("_id") @db.ObjectId
-  serialNumber String   @unique
+  id           String   @id @default(cuid()) @map("_id")
   brand        String
   model        String
   plate        String
@@ -70,17 +69,17 @@ model Vehicles {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  SchoolID String @map("school_id") @db.ObjectId
+  SchoolID String @map("school_id")
   School   School @relation(fields: [SchoolID], references: [id])
 }
 
 model Instructors {
-  id       String @id @default(cuid()) @map("_id") @db.ObjectId
+  id       String @id @default(cuid()) @map("_id")
   name     String
   email    String @unique
   password String
 
-  SchoolID String @map("school_id") @db.ObjectId
+  SchoolID String @map("school_id")
   School   School @relation(fields: [SchoolID], references: [id])
 
   Lessons Lessons[]
@@ -90,15 +89,15 @@ model Instructors {
 }
 
 model Lessons {
-  id        String   @id @default(cuid()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid()) @map("_id")
   type      String
   date      DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  SchoolID String @map("school_id") @db.ObjectId
+  SchoolID String @map("school_id")
   School   School @relation(fields: [SchoolID], references: [id])
 
-  InstructorID String      @map("instructor_id") @db.ObjectId
+  InstructorID String      @map("instructor_id")
   Instructor   Instructors @relation(fields: [InstructorID], references: [id])
 }
