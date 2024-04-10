@@ -9,4 +9,4 @@ const app = new Elysia()
   .use(swagger())
   .listen(Bun.env.API_PORT || 9696);
 
-console.log(`🦊 ${Bun.env.API_NAME} is running at ${app.server?.hostname}:${Bun.env.API_PORT || 9696}`);
+console.log(`🦊 ${Bun.env.API_NAME} is running at http://${app.server?.hostname}:${Bun.env.API_PORT || 9696}`);
