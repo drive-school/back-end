@@ -3,7 +3,12 @@ import prisma from "../../db";
 
 export async function getAllUsers() {
   try {
-    return await prisma.user.findMany();
+    const users = await prisma.user.findMany();
+    return {
+      message: "Users found",
+      code: "SUCCESS",
+      data: users,
+    };
   } catch (e) {
     console.log(e);
     throw new Error("Error fetching users");
@@ -16,7 +21,12 @@ export async function getUserByID(id: string) {
     if (!user) {
       throw new Error("User not found");
     }
-    return user;
+
+    return {
+      message: "User found",
+      code: "SUCCESS",
+      data: user,
+    };
   } catch (e) {
     console.log(e);
     throw new Error("Error fetching user");
@@ -30,10 +40,17 @@ export async function createUser(body: { name: string; email: string; password: 
 
       const EmailAlreadyExists = await prisma.user.findFirst({ where: { email } });
       if (EmailAlreadyExists) {
-        throw new Error("Email already exists");
+        const EmailAlreadyExistsError = new Error("Email already exists");
+        return { message: EmailAlreadyExistsError.message, code: "ERROR" };
       }
 
-      return await prisma.user.create({ data: { name, email, password } }).finally(() => prisma.$disconnect());
+      const newUser = await prisma.user.create({ data: { name, email, password } }).finally(() => prisma.$disconnect());
+
+      return {
+        message: "User created successfully",
+        code: "SUCCESS",
+        data: newUser,
+      };
     } catch (e) {
       console.log(e);
       throw new Error("Error creating user");
@@ -43,24 +60,48 @@ export async function createUser(body: { name: string; email: string; password: 
   }
 }
 
-export async function updateUser(id: string, body: { name: string; email: string; password: string }) {
+export async function updateUser(id: string, body: { name?: string; email?: string }) {
   if (typeof body === "object" && body !== null) {
     try {
-      const { name, email, password } = body;
+      const updateData: { name?: string; email?: string } = {};
+
+      if (body.name) updateData.name = body.name;
+      if (body.email) updateData.email = body.email;
 
       const user = await prisma.user.findFirst({ where: { id } });
       if (!user) {
         throw new Error("User not found");
       }
 
-      return await prisma.user
-        .update({ where: { id }, data: { name, email, password } })
+      const updatedUser = await prisma.user
+        .update({ where: { id }, data: updateData })
         .finally(() => prisma.$disconnect());
+
+      return {
+        message: "User updated successfully",
+        code: "SUCCESS",
+        data: updatedUser,
+      };
     } catch (e) {
       console.log(e);
       throw new Error("Error updating user");
     }
   } else {
     throw new Error("Body must be an object");
+  }
+}
+
+export async function deleteUser(id: string) {
+  try {
+    const user = await prisma.user.findFirst({ where: { id } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await prisma.user.delete({ where: { id } }).finally(() => prisma.$disconnect());
+    return { message: "User deleted successfully", code: "SUCCESS" };
+  } catch (e) {
+    console.log(e);
+    throw new Error("Error deleting user");
   }
 }
