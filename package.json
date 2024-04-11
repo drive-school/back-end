@@ -9,7 +9,8 @@
     "@elysiajs/cors": "^1.0.2",
     "@elysiajs/swagger": "^1.0.3",
     "@prisma/client": "^5.12.1",
-    "elysia": "latest"
+    "elysia": "latest",
+    "stripe": "^15.0.0"
   },
   "devDependencies": {
     "bun-types": "latest",
