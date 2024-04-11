@@ -1,15 +1,12 @@
 import { stripe } from "../../utils/stripe";
 
-export async function createCostumer() {
+export async function createCostumer(body: { name: string; email: string; phone?: string }) {
   try {
-    const customer = await stripe.customers.create(
-      {
-        description: "My First Test Customer (created for API docs at https://www.stripe.com/docs/api)",
-      },
-      {
-        idempotencyKey: "KG5LxwFBepaKHyUD",
-      }
-    );
+    const customer = await stripe.customers.create({
+      name: body.name,
+      email: body.email,
+      phone: body?.phone,
+    });
     return {
       customer,
     };
