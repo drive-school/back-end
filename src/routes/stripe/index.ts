@@ -2,8 +2,8 @@ import { Elysia, t } from "elysia";
 import { createCostumer, getCostumers } from "./handler";
 
 const stripeRoutes = new Elysia({ prefix: "/stripe" })
-  .get("/", () => getCostumers)
-  .post("/", ({ body }) => createCostumer, {
+  .get("/", () => getCostumers())
+  .post("/", ({ body }) => createCostumer(body), {
     body: t.Object({
       name: t.String({
         minLength: 3,
@@ -11,12 +11,9 @@ const stripeRoutes = new Elysia({ prefix: "/stripe" })
       }),
       email: t.String({
         format: "email",
+        errorMessage: "Invalid email",
       }),
-      phone: t.Optional(
-        t.String({
-          format: "phone",
-        })
-      ),
+      phone: t.Optional(t.String()),
     }),
   });
 
